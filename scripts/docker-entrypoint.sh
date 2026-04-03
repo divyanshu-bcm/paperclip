@@ -25,4 +25,10 @@ mkdir -p /paperclip/instances/default/logs \
          /paperclip/instances/default/workspaces
 chown -R node:node /paperclip
 
+# Auto-login Codex CLI if OPENAI_API_KEY is set (required for Codex to work)
+if [ -n "$OPENAI_API_KEY" ]; then
+    echo "[entrypoint] Running codex login with API key..."
+    printf '%s' "$OPENAI_API_KEY" | gosu node codex login --with-api-key 2>&1 || echo "[entrypoint] codex login failed (non-fatal)"
+fi
+
 exec gosu node "$@"
